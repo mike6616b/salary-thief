@@ -12,12 +12,15 @@
             font-family: 'Helvetica Neue', Arial, sans-serif;
         }
         
-        body {
+        html, body {
+            height: 100%;
             background-color: #f0f0f0;
+        }
+
+        body {
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
         }
         
         .phone-container {
@@ -75,11 +78,10 @@
         }
         
         .app-title {
-            font-size: 42px;
+            font-size: 36px;
             font-weight: bold;
             color: #4a2b0f;
-            margin-top: 40px;
-            margin-bottom: 20px;
+            text-align: center;
         }
 
         .content {
@@ -88,13 +90,14 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            width: 100%;
         }
         
         .timer-display {
-            font-size: 60px;
+            font-size: 48px;
             font-weight: bold;
             color: #4a2b0f;
-            margin-bottom: 20px;
+            margin: 20px 0 10px;
         }
         
         .money-container {
@@ -103,11 +106,11 @@
             border-radius: 15px;
             padding: 15px;
             background-color: rgba(255, 255, 255, 0.3);
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         
         .money-text {
-            font-size: 40px;
+            font-size: 36px;
             font-weight: bold;
             color: #4a2b0f;
             text-align: center;
@@ -116,8 +119,8 @@
         .mascot-container {
             position: relative;
             width: 100%;
-            max-width: 320px;
-            margin-bottom: 30px;
+            max-width: 300px;
+            margin-bottom: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -134,9 +137,9 @@
         }
         
         .start-button {
-            width: 150px;
-            height: 150px;
-            border-radius: 75px;
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
             background-color: #4a2b0f;
             display: flex;
             justify-content: center;
@@ -158,7 +161,7 @@
         }
         
         .button-text {
-            font-size: 36px;
+            font-size: 28px;
             font-weight: bold;
             color: white;
         }
@@ -166,13 +169,13 @@
         .bottom-controls {
             margin-top: 30px;
             display: flex;
-            gap: 20px;
+            gap: 15px;
             flex-wrap: wrap;
             justify-content: center;
         }
         
         .control-button {
-            padding: 10px 15px;
+            padding: 10px 14px;
             border-radius: 10px;
             font-weight: bold;
             color: white;
