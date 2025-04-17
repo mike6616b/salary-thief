@@ -103,27 +103,19 @@
             text-align: center;
         }
         
-        .toilet-container {
+        .mascot-container {
             position: relative;
-            height: 150px;
+            width: 100%;
+            max-width: 320px;
             margin-bottom: 30px;
             display: flex;
             justify-content: center;
             align-items: center;
         }
-        
-        .toilet {
-            font-size: 120px;
-            position: absolute;
-            z-index: 1;
-        }
-        
-        .poop {
-            font-size: 60px;
-            position: absolute;
-            z-index: 2;
-            top: 10px;
-            animation: bounce 1.5s ease-in-out infinite;
+
+        .mascot-img {
+            width: 100%;
+            animation: bounce 2s ease-in-out infinite;
         }
         
         @keyframes bounce {
@@ -257,26 +249,15 @@
     </style>
 </head>
 <body>
-    <div class="phone-container">
-        <div class="phone-notch"></div>
-        <div class="status-bar">
-            <div class="time">9:41</div>
-            <div class="status-icons">
-                <div>📶</div>
-                <div>📡</div>
-                <div>🔋</div>
-            </div>
+    <div class="app-container">
+        <h1 class="app-title">Stealing Salary</h1>
+        <div class="timer-display" id="timer">00:00:00</div>
+        <div class="money-container">
+            <div class="money-text" id="money">$0.00</div>
         </div>
-        <div class="app-container">
-            <h1 class="app-title">Stealing Salary</h1>
-            <div class="timer-display" id="timer">00:00:00</div>
-            <div class="money-container">
-                <div class="money-text" id="money">$0.00</div>
-            </div>
-            <div class="toilet-container">
-                <div class="toilet">🚽</div>
-                <div class="poop">💩</div>
-            </div>
+        <div class="mascot-container">
+            <img src="img/poop-toilet.png" alt="Poop on Toilet" class="mascot-img" />
+        </div>
             <div class="start-button" id="startButton">
                 <div class="button-text" id="buttonText">Start</div>
             </div>
