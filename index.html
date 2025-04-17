@@ -21,8 +21,9 @@
         }
         
         .phone-container {
-            width: 375px;
-            height: 812px;
+            width: 100%;
+            max-width: 430px;
+            height: 100vh;
             background-color: #fff;
             border-radius: 40px;
             overflow: hidden;
@@ -154,10 +155,11 @@
         }
         
         .bottom-controls {
-            position: absolute;
-            bottom: 40px;
+            margin-top: 30px;
             display: flex;
             gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
         
         .control-button {
@@ -256,7 +258,7 @@
             <div class="money-text" id="money">$0.00</div>
         </div>
         <div class="mascot-container">
-            <img src="img/poop-toilet.png" alt="Poop on Toilet" class="mascot-img" />
+            <img src="poop-toilet.png" alt="Poop on Toilet" class="mascot-img" />
         </div>
             <div class="start-button" id="startButton">
                 <div class="button-text" id="buttonText">Start</div>
