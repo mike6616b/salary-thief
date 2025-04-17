@@ -65,12 +65,13 @@
         }
         
         .app-container {
-            height: calc(100% - 44px);
-            background-color: #f5e6c9;
+            height: 100vh;
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            position: relative;
+            padding: 24px 20px;
+            background-color: #f5e6c9;
         }
         
         .app-title {
@@ -79,6 +80,14 @@
             color: #4a2b0f;
             margin-top: 40px;
             margin-bottom: 20px;
+        }
+
+        .content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
         
         .timer-display {
@@ -251,14 +260,17 @@
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <h1 class="app-title">Salary Thief</h1>
-        <div class="timer-display" id="timer">00:00:00</div>
-        <div class="money-container">
+      <div class="app-container">
+        <h1 class="app-title">Stealing Salary</h1>
+
+        <div class="content">
+          <div class="timer-display" id="timer">00:00:00</div>
+          <div class="money-container">
             <div class="money-text" id="money">$0.00</div>
-        </div>
-        <div class="mascot-container">
+          </div>
+          <div class="mascot-container">
             <img src="poop-toilet.png" alt="Poop on Toilet" class="mascot-img" />
+          </div>
         </div>
             <div class="start-button" id="startButton">
                 <div class="button-text" id="buttonText">Start</div>
