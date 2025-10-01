@@ -2,8 +2,8 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>薪 水 小 偷</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>薪水小偷</title>
     <style>
         * {
             margin: 0;
@@ -13,126 +13,193 @@
         }
         
         html, body {
-             height: 100%;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
         }
-
+        
         body {
-             min-height: 100dvh;
-             display: flex;
-             justify-content: center;
-             align-items: stretch;
-             background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
         }
         
         .phone-container {
             width: 100%;
             max-width: 430px;
             height: 100vh;
+            height: 100dvh; /* 動態視窗高度 */
             background-color: #fff;
-            border-radius: 40px;
             overflow: hidden;
             position: relative;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            border: 12px solid #1a1a1a;
         }
         
-        .phone-notch {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 180px;
-            height: 30px;
-            background-color: #1a1a1a;
-            border-bottom-left-radius: 15px;
-            border-bottom-right-radius: 15px;
-            z-index: 10;
-        }
-        
-        .status-bar {
-            height: 44px;
-            background-color: #f5e6c9;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            padding-top: 12px;
-        }
-        
-        .time {
-            font-weight: bold;
-        }
-        
-        .status-icons {
-            display: flex;
-            gap: 5px;
+        /* 大螢幕樣式 */
+        @media (min-width: 431px) {
+            .phone-container {
+                border-radius: 40px;
+                border: 12px solid #1a1a1a;
+                height: min(100vh, 900px);
+            }
         }
         
         .app-container {
-            flex: 1;
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            padding: 24px 20px;
             background-color: #f5e6c9;
             overflow: hidden;
         }
         
+        .app-header {
+            padding: 20px 20px 10px;
+            background-color: #f5e6c9;
+            position: relative;
+        }
+        
         .app-title {
-            font-size: 36px;
+            font-size: 32px;
             font-weight: bold;
             color: #4a2b0f;
             text-align: center;
         }
-
+        
+        /* 統計區域 */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            padding: 10px 15px;
+            background-color: rgba(255, 255, 255, 0.5);
+            margin: 0 15px;
+            border-radius: 10px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 5px;
+        }
+        
+        .stat-label {
+            font-size: 10px;
+            color: #8a6343;
+            margin-bottom: 2px;
+        }
+        
+        .stat-value {
+            font-size: 14px;
+            font-weight: bold;
+            color: #4a2b0f;
+        }
+        
         .content {
-            flex: 1 1 auto;
+            flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: space-around;
             align-items: center;
-            width: 100%;
-            overflow-y: auto;
-            min-height: 0;
+            padding: 10px 20px;
+            overflow: hidden;
         }
         
         .timer-display {
-            font-size: 48px;
+            font-size: clamp(36px, 10vw, 48px);
             font-weight: bold;
             color: #4a2b0f;
-            margin: 20px 0 10px;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+        }
+        
+        /* 計時中的動畫效果 */
+        .timer-display.running {
+            animation: timerPulse 1s ease-in-out infinite;
+        }
+        
+        @keyframes timerPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
         }
         
         .money-container {
             width: 85%;
+            max-width: 300px;
             border: 2px solid #bd8c5d;
             border-radius: 15px;
             padding: 15px;
             background-color: rgba(255, 255, 255, 0.3);
-            margin-bottom: 20px;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .money-container.highlight {
+            animation: moneyGlow 0.5s ease;
+        }
+        
+        @keyframes moneyGlow {
+            0%, 100% { 
+                box-shadow: 0 0 0 rgba(189, 140, 93, 0);
+                background-color: rgba(255, 255, 255, 0.3);
+            }
+            50% { 
+                box-shadow: 0 0 20px rgba(189, 140, 93, 0.6);
+                background-color: rgba(255, 255, 255, 0.6);
+            }
         }
         
         .money-text {
-            font-size: 36px;
+            font-size: clamp(28px, 8vw, 36px);
             font-weight: bold;
             color: #4a2b0f;
             text-align: center;
+        }
+        
+        .target-progress {
+            width: 85%;
+            max-width: 300px;
+            margin: 10px 0;
+            display: none;
+        }
+        
+        .target-progress.show {
+            display: block;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #52c41a, #73d13d);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
         }
         
         .mascot-container {
             position: relative;
             width: 100%;
-            max-width: 300px;
-            margin-bottom: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
+            margin: 10px 0;
         }
-
+        
         .mascot-img {
-            max-height: 35vh;
+            max-height: 25vh;
+            max-width: 80%;
             width: auto;
+            height: auto;
             animation: bounce 2s ease-in-out infinite;
         }
         
@@ -141,60 +208,132 @@
             50% { transform: translateY(-10px); }
         }
         
-        .start-button {
-            width: 130px;
-            height: 130px;
+        /* 控制按鈕區域 */
+        .controls-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            padding-bottom: 20px;
+        }
+        
+        .main-button {
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             background-color: #4a2b0f;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            margin-top: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
+            border: none;
+            position: relative;
+            overflow: hidden;
         }
         
-        .start-button.running {
+        .main-button:before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #4a2b0f, #bd8c5d, #4a2b0f);
+            border-radius: 50%;
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.3s ease;
+        }
+        
+        .main-button:hover {
+            transform: scale(1.05);
+        }
+        
+        .main-button.running {
             background-color: #cc4b37;
             animation: pulse 1.5s infinite;
         }
         
+        .main-button.running:before {
+            opacity: 1;
+            animation: rotate 2s linear infinite;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
         @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+            50% { 
+                transform: scale(1.05);
+                box-shadow: 0 6px 16px rgba(204, 75, 55, 0.4);
+            }
         }
         
         .button-text {
-            font-size: 28px;
+            font-size: 22px;
             font-weight: bold;
             color: white;
+            z-index: 1;
         }
         
-        .bottom-controls {
-            margin-top: 30px;
+        .secondary-buttons {
             display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            justify-content: center;
+            gap: 10px;
         }
         
         .control-button {
-            padding: 10px 14px;
-            border-radius: 10px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
             font-weight: bold;
             color: white;
             cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
         }
         
-        .settings-button {
-            background-color: #bd8c5d;
+        .control-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .pause-button {
+            background-color: #ffa500;
+            display: none;
+        }
+        
+        .pause-button.show {
+            display: block;
         }
         
         .reset-button {
             background-color: #8a6343;
         }
         
+        .bottom-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .settings-button {
+            background-color: #bd8c5d;
+        }
+        
+        .history-button {
+            background-color: #7d5a3c;
+        }
+        
+        /* 模態視窗 */
         .modal {
             display: none;
             position: absolute;
@@ -203,59 +342,91 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal.show {
+            display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 100;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
         .modal-content {
-            width: 80%;
+            width: 90%;
+            max-width: 350px;
+            max-height: 80vh;
             background-color: white;
             border-radius: 15px;
             padding: 20px;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
         
         .modal-title {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: bold;
             color: #4a2b0f;
-            margin-bottom: 20px;
-        }
-        
-        .hourly-rate-input {
-            width: 70%;
-            height: 50px;
-            border: 1px solid #bd8c5d;
-            border-radius: 8px;
-            padding: 0 15px;
-            font-size: 18px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             text-align: center;
         }
         
-        .rate-label {
-            font-size: 16px;
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-label {
+            font-size: 14px;
             color: #4a2b0f;
-            margin-bottom: 20px;
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        .input-field {
+            width: 100%;
+            height: 40px;
+            border: 1px solid #bd8c5d;
+            border-radius: 8px;
+            padding: 0 10px;
+            font-size: 16px;
         }
         
         .modal-buttons {
             display: flex;
-            justify-content: space-between;
-            width: 100%;
+            gap: 10px;
         }
         
         .modal-button {
-            padding: 12px;
+            flex: 1;
+            padding: 10px;
             border-radius: 8px;
-            min-width: 40%;
-            text-align: center;
             font-weight: bold;
             color: white;
             cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         
         .cancel-button {
@@ -265,134 +436,747 @@
         .save-button {
             background-color: #4a2b0f;
         }
+        
+        /* 歷史記錄樣式 */
+        .history-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .history-date {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .history-time {
+            font-size: 14px;
+            font-weight: bold;
+            color: #4a2b0f;
+        }
+        
+        .history-money {
+            font-size: 16px;
+            color: #52c41a;
+            font-weight: bold;
+        }
+        
+        .clear-history-btn {
+            background-color: #cc4b37;
+            margin-top: 10px;
+        }
+        
+        /* 提示訊息 */
+        .toast {
+            position: fixed;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            z-index: 200;
+            display: none;
+            animation: toastSlideUp 0.3s ease;
+        }
+        
+        .toast.show {
+            display: block;
+        }
+        
+        @keyframes toastSlideUp {
+            from { transform: translate(-50%, 100%); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+        
+        /* 響應式調整 */
+        @media (max-height: 600px) {
+            .app-title { font-size: 24px; }
+            .timer-display { font-size: 32px; }
+            .money-text { font-size: 24px; }
+            .mascot-img { max-height: 20vh; }
+            .main-button { width: 80px; height: 80px; }
+            .button-text { font-size: 18px; }
+            .stats-container { gap: 5px; padding: 8px 10px; }
+        }
+        
+        @media (min-width: 768px) and (min-height: 800px) {
+            .stats-container { padding: 15px 20px; }
+            .stat-label { font-size: 12px; }
+            .stat-value { font-size: 18px; }
+        }
     </style>
 </head>
 <body>
-      <div class="app-container">
-        <h1 class="app-title">Salary Thief</h1>
-
-        <div class="content">
-          <div class="timer-display" id="timer">00:00:00</div>
-          <div class="money-container">
-            <div class="money-text" id="money">$0.00</div>
-          </div>
-          <div class="mascot-container">
-            <img src="poop-toilet.png" alt="Poop on Toilet" class="mascot-img" />
-          </div>
-        </div>
-            <div class="start-button" id="startButton">
-                <div class="button-text" id="buttonText">開偷</div>
-            </div>
-            <div class="bottom-controls">
-                <div class="control-button settings-button" id="settingsButton">設定時薪</div>
-                <div class="control-button reset-button" id="resetButton">重置計時器</div>
+    <div class="phone-container">
+        <div class="app-container">
+            <div class="app-header">
+                <h1 class="app-title">薪 水 小 偷</h1>
             </div>
             
-            <div class="modal" id="settingsModal">
-                <div class="modal-content">
-                    <h2 class="modal-title">設定時薪</h2>
-                    <input type="number" class="hourly-rate-input" id="hourlyRateInput" placeholder="請輸入時薪" value="300">
-                    <div class="rate-label">元/小時</div>
-                    <div class="modal-buttons">
-                        <div class="modal-button cancel-button" id="cancelButton">取消</div>
-                        <div class="modal-button save-button" id="saveButton">儲存</div>
+            <!-- 統計資訊 -->
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-label">今日累計</div>
+                    <div class="stat-value" id="todayTotal">$0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">本週累計</div>
+                    <div class="stat-value" id="weekTotal">$0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">本月累計</div>
+                    <div class="stat-value" id="monthTotal">$0</div>
+                </div>
+            </div>
+            
+            <div class="content">
+                <div class="timer-display" id="timer">00:00:00</div>
+                <div class="money-container" id="moneyContainer">
+                    <div class="money-text" id="money">$0.00</div>
+                </div>
+                
+                <!-- 目標進度條 -->
+                <div class="target-progress" id="targetProgress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill">0%</div>
                     </div>
+                </div>
+                
+                <div class="mascot-container">
+                    <img src="poop-toilet.png" alt="Poop on Toilet" class="mascot-img" />
+                </div>
+            </div>
+            
+            <div class="controls-section">
+                <button class="main-button" id="startButton">
+                    <span class="button-text" id="buttonText">開偷</span>
+                </button>
+                
+                <div class="secondary-buttons">
+                    <button class="control-button pause-button" id="pauseButton">暫停</button>
+                    <button class="control-button reset-button" id="resetButton">重置</button>
+                </div>
+                
+                <div class="bottom-controls">
+                    <button class="control-button settings-button" id="settingsButton">設定</button>
+                    <button class="control-button history-button" id="historyButton">歷史</button>
                 </div>
             </div>
         </div>
+        
+        <!-- 設定模態 -->
+        <div class="modal" id="settingsModal">
+            <div class="modal-content">
+                <h2 class="modal-title">設定</h2>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <label class="input-label">時薪（元/小時）</label>
+                        <input type="number" class="input-field" id="hourlyRateInput" value="300">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">目標金額（選填）</label>
+                        <input type="number" class="input-field" id="targetAmountInput" placeholder="例如: 1000">
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button class="modal-button cancel-button" id="cancelSettingsBtn">取消</button>
+                    <button class="modal-button save-button" id="saveSettingsBtn">儲存</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 歷史記錄模態 -->
+        <div class="modal" id="historyModal">
+            <div class="modal-content">
+                <h2 class="modal-title">歷史記錄</h2>
+                <div class="modal-body" id="historyList">
+                    <!-- 動態生成歷史記錄 -->
+                </div>
+                <div class="modal-buttons">
+                    <button class="modal-button cancel-button" id="closeHistoryBtn">關閉</button>
+                    <button class="modal-button clear-history-btn" id="clearHistoryBtn">清除全部</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 提示訊息 -->
+        <div class="toast" id="toast"></div>
     </div>
-
+    
     <script>
-        // 獲取DOM元素
-        const timerDisplay = document.getElementById('timer');
-        const moneyDisplay = document.getElementById('money');
-        const startButton = document.getElementById('startButton');
-        const buttonText = document.getElementById('buttonText');
-        const resetButton = document.getElementById('resetButton');
-        const settingsButton = document.getElementById('settingsButton');
-        const settingsModal = document.getElementById('settingsModal');
-        const hourlyRateInput = document.getElementById('hourlyRateInput');
-        const cancelButton = document.getElementById('cancelButton');
-        const saveButton = document.getElementById('saveButton');
-        
-        // 初始化變數
-        let isRunning = false;
-        let seconds = 0;
-        let timerInterval;
-        let hourlyRate = 300;
-        
-        // 格式化時間為HH:MM:SS
-        function formatTime(timeInSeconds) {
-            const hours = Math.floor(timeInSeconds / 3600);
-            const minutes = Math.floor((timeInSeconds % 3600) / 60);
-            const secs = timeInSeconds % 60;
+        // ========== 應用程式主要邏輯 ==========
+        class SalaryThief {
+            constructor() {
+                // 狀態管理
+                this.state = {
+                    isRunning: false,
+                    isPaused: false,
+                    seconds: 0,
+                    hourlyRate: 300,
+                    targetAmount: null,
+                    startTime: null,
+                    pausedTime: 0,
+                    todayTotal: 0,
+                    weekTotal: 0,
+                    monthTotal: 0,
+                    lastActiveDate: null,
+                    history: []
+                }
+            }
             
-            return [
-                hours.toString().padStart(2, '0'),
-                minutes.toString().padStart(2, '0'),
-                secs.toString().padStart(2, '0')
-            ].join(':');
-        }
-        
-        // 計算薪水
-        function calculateMoney(timeInSeconds) {
-            const secondRate = hourlyRate / 3600;
-            return (secondRate * timeInSeconds).toFixed(2);
-        }
-        
-        // 開始/停止計時器
-        function toggleTimer() {
-            if (!isRunning) {
-                // 開始計時
-                isRunning = true;
-                startButton.classList.add('running');
-                buttonText.textContent = 'Stop';
+            calculateMoney() {
+                const secondRate = this.state.hourlyRate / 3600;
+                return secondRate * this.state.seconds;
+            }
+            
+            checkTargetProgress() {
+                if (!this.state.targetAmount) {
+                    this.elements.targetProgress.classList.remove('show');
+                    return;
+                }
                 
-                timerInterval = setInterval(() => {
-                    seconds++;
-                    timerDisplay.textContent = formatTime(seconds);
-                    moneyDisplay.textContent = '$' + calculateMoney(seconds);
-                }, 1000);
-            } else {
-                // 停止計時
-                isRunning = false;
-                startButton.classList.remove('running');
-                buttonText.textContent = 'Start';
-                clearInterval(timerInterval);
+                this.elements.targetProgress.classList.add('show');
+                const current = this.calculateMoney();
+                const progress = Math.min((current / this.state.targetAmount) * 100, 100);
+                
+                this.elements.progressFill.style.width = `${progress}%`;
+                this.elements.progressFill.textContent = `${Math.floor(progress)}%`;
+                
+                // 達標提醒
+                if (progress >= 100 && !this.state.targetReached) {
+                    this.state.targetReached = true;
+                    this.showToast('🎉 恭喜達成目標金額！');
+                    // 震動提醒（如果支援）
+                    if ('vibrate' in navigator) {
+                        navigator.vibrate([200, 100, 200]);
+                    }
+                }
+            }
+            
+            // ========== 統計功能 ==========
+            updateStatistics() {
+                const money = this.calculateMoney();
+                
+                // 更新今日累計
+                this.state.todayTotal += money;
+                this.state.weekTotal += money;
+                this.state.monthTotal += money;
+                
+                this.updateStatsDisplay();
+            }
+            
+            updateStatsDisplay() {
+                this.elements.todayTotal.textContent = `${this.state.todayTotal.toFixed(0)}`;
+                this.elements.weekTotal.textContent = `${this.state.weekTotal.toFixed(0)}`;
+                this.elements.monthTotal.textContent = `${this.state.monthTotal.toFixed(0)}`;
+            }
+            
+            checkDateChange() {
+                const now = new Date();
+                const today = now.toDateString();
+                
+                if (!this.state.lastActiveDate) {
+                    this.state.lastActiveDate = today;
+                    this.saveState();
+                    return;
+                }
+                
+                const lastDate = new Date(this.state.lastActiveDate);
+                const currentDate = new Date(today);
+                
+                // 檢查是否跨日
+                if (lastDate.toDateString() !== currentDate.toDateString()) {
+                    // 每日結算
+                    if (this.state.todayTotal > 0) {
+                        this.showToast(`昨日偷薪總計: ${this.state.todayTotal.toFixed(2)}`);
+                    }
+                    this.state.todayTotal = 0;
+                    
+                    // 檢查是否跨週（週一為起始）
+                    const lastWeek = this.getWeekNumber(lastDate);
+                    const currentWeek = this.getWeekNumber(currentDate);
+                    if (lastWeek !== currentWeek) {
+                        this.state.weekTotal = 0;
+                    }
+                    
+                    // 檢查是否跨月
+                    if (lastDate.getMonth() !== currentDate.getMonth()) {
+                        this.state.monthTotal = 0;
+                    }
+                    
+                    this.state.lastActiveDate = today;
+                    this.updateStatsDisplay();
+                    this.saveState();
+                }
+            }
+            
+            getWeekNumber(date) {
+                const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+                const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+                return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+            }
+            
+            // ========== 歷史記錄 ==========
+            saveToHistory() {
+                const now = new Date();
+                const record = {
+                    id: Date.now(),
+                    date: now.toLocaleDateString('zh-TW'),
+                    time: now.toLocaleTimeString('zh-TW'),
+                    duration: this.state.seconds,
+                    money: this.calculateMoney(),
+                    hourlyRate: this.state.hourlyRate
+                };
+                
+                this.state.history.unshift(record); // 新記錄放在最前面
+                
+                // 限制歷史記錄數量（保留最近30筆）
+                if (this.state.history.length > 30) {
+                    this.state.history = this.state.history.slice(0, 30);
+                }
+                
+                this.saveState();
+            }
+            
+            openHistory() {
+                this.renderHistory();
+                this.elements.historyModal.classList.add('show');
+            }
+            
+            renderHistory() {
+                if (this.state.history.length === 0) {
+                    this.elements.historyList.innerHTML = '<p style="text-align: center; color: #999;">尚無歷史記錄</p>';
+                    return;
+                }
+                
+                let html = '';
+                this.state.history.forEach(record => {
+                    const hours = Math.floor(record.duration / 3600);
+                    const minutes = Math.floor((record.duration % 3600) / 60);
+                    const timeStr = hours > 0 ? `${hours}小時${minutes}分` : `${minutes}分鐘`;
+                    
+                    html += `
+                        <div class="history-item">
+                            <div class="history-date">${record.date} ${record.time}</div>
+                            <div class="history-time">時長: ${timeStr}</div>
+                            <div class="history-money">賺取: ${record.money.toFixed(2)}</div>
+                        </div>
+                    `;
+                });
+                
+                this.elements.historyList.innerHTML = html;
+            }
+            
+            clearHistory() {
+                if (confirm('確定要清除所有歷史記錄嗎？')) {
+                    this.state.history = [];
+                    this.saveState();
+                    this.renderHistory();
+                    this.showToast('歷史記錄已清除');
+                }
+            }
+            
+            // ========== 設定功能 ==========
+            openSettings() {
+                this.elements.hourlyRateInput.value = this.state.hourlyRate;
+                this.elements.targetAmountInput.value = this.state.targetAmount || '';
+                this.elements.settingsModal.classList.add('show');
+            }
+            
+            saveSettings() {
+                const hourlyRate = parseFloat(this.elements.hourlyRateInput.value) || 300;
+                const targetAmount = parseFloat(this.elements.targetAmountInput.value) || null;
+                
+                this.state.hourlyRate = hourlyRate;
+                this.state.targetAmount = targetAmount;
+                this.state.targetReached = false; // 重置達標狀態
+                
+                this.updateDisplay();
+                this.saveState();
+                this.closeModal('settingsModal');
+                this.showToast('設定已儲存');
+            }
+            
+            // ========== 資料儲存與載入 ==========
+            saveState() {
+                const dataToSave = {
+                    ...this.state,
+                    savedAt: Date.now()
+                };
+                localStorage.setItem('salaryThiefState', JSON.stringify(dataToSave));
+            }
+            
+            loadState() {
+                const saved = localStorage.getItem('salaryThiefState');
+                if (saved) {
+                    try {
+                        const data = JSON.parse(saved);
+                        
+                        // 合併載入的資料與預設值
+                        this.state = {
+                            ...this.state,
+                            ...data,
+                            // 重置某些臨時狀態
+                            isRunning: data.isRunning && data.startTime ? true : false,
+                            isPaused: false
+                        };
+                        
+                        // 檢查是否需要恢復計時
+                        if (data.isRunning && data.startTime) {
+                            // 計算離線期間經過的時間
+                            const now = Date.now();
+                            const offlineTime = Math.floor((now - data.savedAt) / 1000);
+                            
+                            // 如果離線時間小於1小時，繼續計時
+                            if (offlineTime < 3600) {
+                                this.state.startTime = data.startTime;
+                            } else {
+                                // 離線太久，停止計時
+                                this.state.isRunning = false;
+                                this.state.startTime = null;
+                                this.showToast('離線時間過長，計時已停止');
+                            }
+                        }
+                    } catch (e) {
+                        console.error('載入資料失敗:', e);
+                        this.showToast('載入資料失敗');
+                    }
+                }
+            }
+            
+            // ========== UI 輔助功能 ==========
+            updateDisplay() {
+                this.updateTimer();
+                this.updateMoney();
+                this.updateStatsDisplay();
+                this.checkTargetProgress();
+            }
+            
+            closeModal(modalId) {
+                this.elements[modalId].classList.remove('show');
+            }
+            
+            showToast(message, duration = 3000) {
+                this.elements.toast.textContent = message;
+                this.elements.toast.classList.add('show');
+                
+                setTimeout(() => {
+                    this.elements.toast.classList.remove('show');
+                }, duration);
             }
         }
         
-        // 重置計時器
-        function resetTime() {
-            clearInterval(timerInterval);
-            isRunning = false;
-            seconds = 0;
-            startButton.classList.remove('running');
-            buttonText.textContent = 'Start';
-            timerDisplay.textContent = '00:00:00';
-            moneyDisplay.textContent = '$0.00';
-        }
-        
-        // 顯示設定模態視窗
-        function showSettings() {
-            settingsModal.style.display = 'flex';
-            hourlyRateInput.value = hourlyRate;
-        }
-        
-        // 儲存設定
-        function saveSettings() {
-            const newRate = parseInt(hourlyRateInput.value) || 300;
-            hourlyRate = newRate;
-            moneyDisplay.textContent = '$' + calculateMoney(seconds);
-            settingsModal.style.display = 'none';
-        }
-        
-        // 事件監聽
-        startButton.addEventListener('click', toggleTimer);
-        resetButton.addEventListener('click', resetTime);
-        settingsButton.addEventListener('click', showSettings);
-        cancelButton.addEventListener('click', () => settingsModal.style.display = 'none');
-        saveButton.addEventListener('click', saveSettings);
+        // ========== 初始化應用程式 ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = new SalaryThief();
+            
+            // 防止手機休眠時停止計時（使用 Page Visibility API）
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    // 頁面隱藏時儲存狀態
+                    if (app.state.isRunning) {
+                        app.saveState();
+                    }
+                } else {
+                    // 頁面顯示時更新計時
+                    if (app.state.isRunning && app.state.startTime) {
+                        app.updateTimer();
+                        app.updateMoney();
+                        app.checkTargetProgress();
+                    }
+                }
+            });
+            
+            // 防止意外關閉
+            window.addEventListener('beforeunload', (e) => {
+                if (app.state.isRunning) {
+                    app.saveState();
+                    e.preventDefault();
+                    e.returnValue = '計時器正在運行中，確定要離開嗎？';
+                }
+            });
+            
+            // 調整視窗大小時的響應
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    // 可以在這裡加入額外的響應式調整邏輯
+                }, 250);
+            });
+            
+            // 讓app全域可用（用於除錯）
+            window.salaryThiefApp = app;
+        });
     </script>
 </body>
-</html>
+</html>;
+                
+                // 計時器
+                this.timerInterval = null;
+                
+                // DOM 元素
+                this.elements = {};
+                this.cacheElements();
+                
+                // 初始化
+                this.init();
+            }
+            
+            cacheElements() {
+                this.elements = {
+                    timer: document.getElementById('timer'),
+                    money: document.getElementById('money'),
+                    moneyContainer: document.getElementById('moneyContainer'),
+                    startButton: document.getElementById('startButton'),
+                    buttonText: document.getElementById('buttonText'),
+                    pauseButton: document.getElementById('pauseButton'),
+                    resetButton: document.getElementById('resetButton'),
+                    settingsButton: document.getElementById('settingsButton'),
+                    historyButton: document.getElementById('historyButton'),
+                    
+                    // 統計
+                    todayTotal: document.getElementById('todayTotal'),
+                    weekTotal: document.getElementById('weekTotal'),
+                    monthTotal: document.getElementById('monthTotal'),
+                    
+                    // 目標進度
+                    targetProgress: document.getElementById('targetProgress'),
+                    progressFill: document.getElementById('progressFill'),
+                    
+                    // 模態
+                    settingsModal: document.getElementById('settingsModal'),
+                    historyModal: document.getElementById('historyModal'),
+                    hourlyRateInput: document.getElementById('hourlyRateInput'),
+                    targetAmountInput: document.getElementById('targetAmountInput'),
+                    historyList: document.getElementById('historyList'),
+                    
+                    // 提示
+                    toast: document.getElementById('toast')
+                };
+            }
+            
+            init() {
+                // 載入儲存的資料
+                this.loadState();
+                
+                // 檢查日期變更（自動結算）
+                this.checkDateChange();
+                
+                // 綁定事件
+                this.bindEvents();
+                
+                // 更新顯示
+                this.updateDisplay();
+                
+                // 恢復計時狀態
+                if (this.state.isRunning && this.state.startTime) {
+                    this.resumeTimer();
+                }
+                
+                // 定期儲存狀態（每秒）
+                setInterval(() => {
+                    if (this.state.isRunning) {
+                        this.saveState();
+                    }
+                }, 1000);
+                
+                // 檢查日期變更（每分鐘）
+                setInterval(() => {
+                    this.checkDateChange();
+                }, 60000);
+            }
+            
+            bindEvents() {
+                // 主要按鈕
+                this.elements.startButton.addEventListener('click', () => this.toggleTimer());
+                this.elements.pauseButton.addEventListener('click', () => this.pauseTimer());
+                this.elements.resetButton.addEventListener('click', () => this.resetTimer());
+                
+                // 功能按鈕
+                this.elements.settingsButton.addEventListener('click', () => this.openSettings());
+                this.elements.historyButton.addEventListener('click', () => this.openHistory());
+                
+                // 設定模態
+                document.getElementById('cancelSettingsBtn').addEventListener('click', () => this.closeModal('settingsModal'));
+                document.getElementById('saveSettingsBtn').addEventListener('click', () => this.saveSettings());
+                
+                // 歷史模態
+                document.getElementById('closeHistoryBtn').addEventListener('click', () => this.closeModal('historyModal'));
+                document.getElementById('clearHistoryBtn').addEventListener('click', () => this.clearHistory());
+                
+                // 關閉模態（點擊背景）
+                this.elements.settingsModal.addEventListener('click', (e) => {
+                    if (e.target === this.elements.settingsModal) {
+                        this.closeModal('settingsModal');
+                    }
+                });
+                this.elements.historyModal.addEventListener('click', (e) => {
+                    if (e.target === this.elements.historyModal) {
+                        this.closeModal('historyModal');
+                    }
+                });
+            }
+            
+            // ========== 計時器功能 ==========
+            toggleTimer() {
+                if (!this.state.isRunning) {
+                    this.startTimer();
+                } else {
+                    this.stopTimer();
+                }
+            }
+            
+            startTimer() {
+                this.state.isRunning = true;
+                this.state.isPaused = false;
+                
+                if (!this.state.startTime) {
+                    this.state.startTime = Date.now();
+                }
+                
+                // 更新UI
+                this.elements.startButton.classList.add('running');
+                this.elements.buttonText.textContent = '停止';
+                this.elements.pauseButton.classList.add('show');
+                this.elements.timer.classList.add('running');
+                
+                // 開始計時
+                this.timerInterval = setInterval(() => {
+                    this.updateTimer();
+                    this.updateMoney();
+                    this.checkTargetProgress();
+                }, 100); // 每100ms更新一次，更流暢
+                
+                this.showToast('開始偷薪水囉！💰');
+                this.saveState();
+            }
+            
+            stopTimer() {
+                this.state.isRunning = false;
+                this.state.isPaused = false;
+                
+                clearInterval(this.timerInterval);
+                
+                // 儲存到歷史記錄
+                if (this.state.seconds > 0) {
+                    this.saveToHistory();
+                    this.updateStatistics();
+                }
+                
+                // 重置狀態
+                this.state.startTime = null;
+                this.state.pausedTime = 0;
+                
+                // 更新UI
+                this.elements.startButton.classList.remove('running');
+                this.elements.buttonText.textContent = '開偷';
+                this.elements.pauseButton.classList.remove('show');
+                this.elements.timer.classList.remove('running');
+                
+                this.showToast('停止計時，記錄已儲存！');
+                this.saveState();
+            }
+            
+            pauseTimer() {
+                if (this.state.isPaused) {
+                    // 繼續計時
+                    this.state.isPaused = false;
+                    this.state.startTime = Date.now() - (this.state.pausedTime * 1000);
+                    this.elements.pauseButton.textContent = '暫停';
+                    
+                    this.timerInterval = setInterval(() => {
+                        this.updateTimer();
+                        this.updateMoney();
+                        this.checkTargetProgress();
+                    }, 100);
+                    
+                    this.showToast('繼續偷薪水！');
+                } else {
+                    // 暫停計時
+                    this.state.isPaused = true;
+                    this.state.pausedTime = this.state.seconds;
+                    clearInterval(this.timerInterval);
+                    this.elements.pauseButton.textContent = '繼續';
+                    
+                    this.showToast('暫停中...');
+                }
+                this.saveState();
+            }
+            
+            resetTimer() {
+                if (this.state.seconds > 0 && !confirm('確定要重置計時器嗎？未儲存的時間將會遺失。')) {
+                    return;
+                }
+                
+                clearInterval(this.timerInterval);
+                
+                this.state.isRunning = false;
+                this.state.isPaused = false;
+                this.state.seconds = 0;
+                this.state.startTime = null;
+                this.state.pausedTime = 0;
+                
+                this.elements.startButton.classList.remove('running');
+                this.elements.buttonText.textContent = '開偷';
+                this.elements.pauseButton.classList.remove('show');
+                this.elements.pauseButton.textContent = '暫停';
+                this.elements.timer.classList.remove('running');
+                
+                this.updateDisplay();
+                this.showToast('計時器已重置');
+                this.saveState();
+            }
+            
+            resumeTimer() {
+                // 計算已經過的時間
+                const now = Date.now();
+                const elapsed = Math.floor((now - this.state.startTime) / 1000);
+                this.state.seconds = elapsed;
+                
+                // 恢復UI狀態
+                this.elements.startButton.classList.add('running');
+                this.elements.buttonText.textContent = '停止';
+                this.elements.pauseButton.classList.add('show');
+                this.elements.timer.classList.add('running');
+                
+                // 繼續計時
+                this.timerInterval = setInterval(() => {
+                    this.updateTimer();
+                    this.updateMoney();
+                    this.checkTargetProgress();
+                }, 100);
+                
+                this.showToast('繼續上次的計時');
+            }
+            
+            updateTimer() {
+                if (this.state.isRunning && !this.state.isPaused) {
+                    const now = Date.now();
+                    const elapsed = Math.floor((now - this.state.startTime) / 1000);
+                    this.state.seconds = elapsed;
+                }
+                
+                const hours = Math.floor(this.state.seconds / 3600);
+                const minutes = Math.floor((this.state.seconds % 3600) / 60);
+                const secs = this.state.seconds % 60;
+                
+                this.elements.timer.textContent = 
+                    `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            }
+            
+            updateMoney() {
+                const money = this.calculateMoney();
+                const moneyText = `$${money.toFixed(2)}`;
+                
+                if (this.elements.money.textContent !== moneyText) {
+                    this.elements.money.textContent = moneyText;
+                    
+                    // 金額變化動畫
+                    this.elements.moneyContainer.classList.remove('highlight');
+                    void this.elements.moneyContainer.offsetWidth; // 觸發重繪
+                    this.elements.moneyContainer.classList.add('highlight');
+                }
+                
