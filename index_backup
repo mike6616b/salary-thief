@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>薪 水 小 偷</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        html, body {
+             height: 100%;
+        }
+
+        body {
+             min-height: 100dvh;
+             display: flex;
+             justify-content: center;
+             align-items: stretch;
+             background-color: #f0f0f0;
+        }
+        
+        .phone-container {
+            width: 100%;
+            max-width: 430px;
+            height: 100vh;
+            background-color: #fff;
+            border-radius: 40px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            border: 12px solid #1a1a1a;
+        }
+        
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180px;
+            height: 30px;
+            background-color: #1a1a1a;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            z-index: 10;
+        }
+        
+        .status-bar {
+            height: 44px;
+            background-color: #f5e6c9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            padding-top: 12px;
+        }
+        
+        .time {
+            font-weight: bold;
+        }
+        
+        .status-icons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .app-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 20px;
+            background-color: #f5e6c9;
+            overflow: hidden;
+        }
+        
+        .app-title {
+            font-size: 36px;
+            font-weight: bold;
+            color: #4a2b0f;
+            text-align: center;
+        }
+
+        .content {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            overflow-y: auto;
+            min-height: 0;
+        }
+        
+        .timer-display {
+            font-size: 48px;
+            font-weight: bold;
+            color: #4a2b0f;
+            margin: 20px 0 10px;
+        }
+        
+        .money-container {
+            width: 85%;
+            border: 2px solid #bd8c5d;
+            border-radius: 15px;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.3);
+            margin-bottom: 20px;
+        }
+        
+        .money-text {
+            font-size: 36px;
+            font-weight: bold;
+            color: #4a2b0f;
+            text-align: center;
+        }
+        
+        .mascot-container {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .mascot-img {
+            max-height: 35vh;
+            width: auto;
+            animation: bounce 2s ease-in-out infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .start-button {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background-color: #4a2b0f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .start-button.running {
+            background-color: #cc4b37;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .button-text {
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .bottom-controls {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .control-button {
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .settings-button {
+            background-color: #bd8c5d;
+        }
+        
+        .reset-button {
+            background-color: #8a6343;
+        }
+        
+        .modal {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .modal-content {
+            width: 80%;
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #4a2b0f;
+            margin-bottom: 20px;
+        }
+        
+        .hourly-rate-input {
+            width: 70%;
+            height: 50px;
+            border: 1px solid #bd8c5d;
+            border-radius: 8px;
+            padding: 0 15px;
+            font-size: 18px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .rate-label {
+            font-size: 16px;
+            color: #4a2b0f;
+            margin-bottom: 20px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+        
+        .modal-button {
+            padding: 12px;
+            border-radius: 8px;
+            min-width: 40%;
+            text-align: center;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .cancel-button {
+            background-color: #ccc;
+        }
+        
+        .save-button {
+            background-color: #4a2b0f;
+        }
+    </style>
+</head>
+<body>
+      <div class="app-container">
+        <h1 class="app-title">Salary Thief</h1>
+
+        <div class="content">
+          <div class="timer-display" id="timer">00:00:00</div>
+          <div class="money-container">
+            <div class="money-text" id="money">$0.00</div>
+          </div>
+          <div class="mascot-container">
+            <img src="poop-toilet.png" alt="Poop on Toilet" class="mascot-img" />
+          </div>
+        </div>
+            <div class="start-button" id="startButton">
+                <div class="button-text" id="buttonText">開偷</div>
+            </div>
+            <div class="bottom-controls">
+                <div class="control-button settings-button" id="settingsButton">設定時薪</div>
+                <div class="control-button reset-button" id="resetButton">重置計時器</div>
+            </div>
+            
+            <div class="modal" id="settingsModal">
+                <div class="modal-content">
+                    <h2 class="modal-title">設定時薪</h2>
+                    <input type="number" class="hourly-rate-input" id="hourlyRateInput" placeholder="請輸入時薪" value="300">
+                    <div class="rate-label">元/小時</div>
+                    <div class="modal-buttons">
+                        <div class="modal-button cancel-button" id="cancelButton">取消</div>
+                        <div class="modal-button save-button" id="saveButton">儲存</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 獲取DOM元素
+        const timerDisplay = document.getElementById('timer');
+        const moneyDisplay = document.getElementById('money');
+        const startButton = document.getElementById('startButton');
+        const buttonText = document.getElementById('buttonText');
+        const resetButton = document.getElementById('resetButton');
+        const settingsButton = document.getElementById('settingsButton');
+        const settingsModal = document.getElementById('settingsModal');
+        const hourlyRateInput = document.getElementById('hourlyRateInput');
+        const cancelButton = document.getElementById('cancelButton');
+        const saveButton = document.getElementById('saveButton');
+        
+        // 初始化變數
+        let isRunning = false;
+        let seconds = 0;
+        let timerInterval;
+        let hourlyRate = 300;
+        
+        // 格式化時間為HH:MM:SS
+        function formatTime(timeInSeconds) {
+            const hours = Math.floor(timeInSeconds / 3600);
+            const minutes = Math.floor((timeInSeconds % 3600) / 60);
+            const secs = timeInSeconds % 60;
+            
+            return [
+                hours.toString().padStart(2, '0'),
+                minutes.toString().padStart(2, '0'),
+                secs.toString().padStart(2, '0')
+            ].join(':');
+        }
+        
+        // 計算薪水
+        function calculateMoney(timeInSeconds) {
+            const secondRate = hourlyRate / 3600;
+            return (secondRate * timeInSeconds).toFixed(2);
+        }
+        
+        // 開始/停止計時器
+        function toggleTimer() {
+            if (!isRunning) {
+                // 開始計時
+                isRunning = true;
+                startButton.classList.add('running');
+                buttonText.textContent = 'Stop';
+                
+                timerInterval = setInterval(() => {
+                    seconds++;
+                    timerDisplay.textContent = formatTime(seconds);
+                    moneyDisplay.textContent = '$' + calculateMoney(seconds);
+                }, 1000);
+            } else {
+                // 停止計時
+                isRunning = false;
+                startButton.classList.remove('running');
+                buttonText.textContent = 'Start';
+                clearInterval(timerInterval);
+            }
+        }
+        
+        // 重置計時器
+        function resetTime() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            seconds = 0;
+            startButton.classList.remove('running');
+            buttonText.textContent = 'Start';
+            timerDisplay.textContent = '00:00:00';
+            moneyDisplay.textContent = '$0.00';
+        }
+        
+        // 顯示設定模態視窗
+        function showSettings() {
+            settingsModal.style.display = 'flex';
+            hourlyRateInput.value = hourlyRate;
+        }
+        
+        // 儲存設定
+        function saveSettings() {
+            const newRate = parseInt(hourlyRateInput.value) || 300;
+            hourlyRate = newRate;
+            moneyDisplay.textContent = '$' + calculateMoney(seconds);
+            settingsModal.style.display = 'none';
+        }
+        
+        // 事件監聽
+        startButton.addEventListener('click', toggleTimer);
+        resetButton.addEventListener('click', resetTime);
+        settingsButton.addEventListener('click', showSettings);
+        cancelButton.addEventListener('click', () => settingsModal.style.display = 'none');
+        saveButton.addEventListener('click', saveSettings);
+    </script>
+</body>
+</html>
