@@ -579,8 +579,7 @@
         <div class="modal" id="historyModal">
             <div class="modal-content">
                 <h2 class="modal-title">歷史記錄</h2>
-                <div class="modal-body" id="historyList">
-                </div>
+                <div class="modal-body" id="historyList"></div>
                 <div class="modal-buttons">
                     <button class="modal-button cancel-button" id="closeHistoryBtn">關閉</button>
                     <button class="modal-button clear-history-btn" id="clearHistoryBtn">清除全部</button>
@@ -592,13 +591,11 @@
     </div>
     
     <script>
-        // 等待DOM完全載入
-        window.addEventListener('DOMContentLoaded', function() {
-            console.log('頁面載入完成，初始化應用程式...');
-        });
-        
+        // 應用程式主類別
         class SalaryThief {
             constructor() {
+                console.log('建立 SalaryThief 實例');
+                
                 this.state = {
                     isRunning: false,
                     isPaused: false,
@@ -616,11 +613,13 @@
                 
                 this.timerInterval = null;
                 this.elements = {};
+                
                 this.cacheElements();
                 this.init();
             }
             
             cacheElements() {
+                console.log('快取DOM元素');
                 this.elements = {
                     timer: document.getElementById('timer'),
                     money: document.getElementById('money'),
@@ -646,6 +645,7 @@
             }
             
             init() {
+                console.log('初始化應用程式');
                 this.loadState();
                 this.checkDateChange();
                 this.bindEvents();
@@ -667,9 +667,9 @@
             }
             
             bindEvents() {
+                console.log('綁定事件');
                 const self = this;
                 
-                // 主要按鈕 - 使用傳統function確保this正確
                 this.elements.startButton.onclick = function() {
                     console.log('開始按鈕被點擊');
                     self.toggleTimer();
@@ -695,7 +695,6 @@
                     self.openHistory();
                 };
                 
-                // 設定模態按鈕
                 document.getElementById('cancelSettingsBtn').onclick = function() {
                     self.closeModal('settingsModal');
                 };
@@ -704,7 +703,6 @@
                     self.saveSettings();
                 };
                 
-                // 歷史模態按鈕
                 document.getElementById('closeHistoryBtn').onclick = function() {
                     self.closeModal('historyModal');
                 };
@@ -713,7 +711,6 @@
                     self.clearHistory();
                 };
                 
-                // 點擊背景關閉模態
                 this.elements.settingsModal.onclick = function(e) {
                     if (e.target === self.elements.settingsModal) {
                         self.closeModal('settingsModal');
@@ -916,9 +913,9 @@
             }
             
             updateStatsDisplay() {
-                this.elements.todayTotal.textContent = `$${this.state.todayTotal.toFixed(0)}`;
-                this.elements.weekTotal.textContent = `$${this.state.weekTotal.toFixed(0)}`;
-                this.elements.monthTotal.textContent = `$${this.state.monthTotal.toFixed(0)}`;
+                this.elements.todayTotal.textContent = `${this.state.todayTotal.toFixed(0)}`;
+                this.elements.weekTotal.textContent = `${this.state.weekTotal.toFixed(0)}`;
+                this.elements.monthTotal.textContent = `${this.state.monthTotal.toFixed(0)}`;
             }
             
             checkDateChange() {
@@ -936,4 +933,213 @@
                 
                 if (lastDate.toDateString() !== currentDate.toDateString()) {
                     if (this.state.todayTotal > 0) {
-                        this.showToast(`昨日偷薪總計: $${this.state.todayTotal.toFixed(2)}`);
+                        this.showToast(`昨日偷薪總計: ${this.state.todayTotal.toFixed(2)}`);
+                    }
+                    this.state.todayTotal = 0;
+                    
+                    const lastWeek = this.getWeekNumber(lastDate);
+                    const currentWeek = this.getWeekNumber(currentDate);
+                    if (lastWeek !== currentWeek) {
+                        this.state.weekTotal = 0;
+                    }
+                    
+                    if (lastDate.getMonth() !== currentDate.getMonth()) {
+                        this.state.monthTotal = 0;
+                    }
+                    
+                    this.state.lastActiveDate = today;
+                    this.updateStatsDisplay();
+                    this.saveState();
+                }
+            }
+            
+            getWeekNumber(date) {
+                const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+                const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+                return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+            }
+            
+            saveToHistory() {
+                const now = new Date();
+                const record = {
+                    id: Date.now(),
+                    date: now.toLocaleDateString('zh-TW'),
+                    time: now.toLocaleTimeString('zh-TW'),
+                    duration: this.state.seconds,
+                    money: this.calculateMoney(),
+                    hourlyRate: this.state.hourlyRate
+                };
+                
+                this.state.history.unshift(record);
+                
+                if (this.state.history.length > 30) {
+                    this.state.history = this.state.history.slice(0, 30);
+                }
+                
+                this.saveState();
+            }
+            
+            openHistory() {
+                this.renderHistory();
+                this.elements.historyModal.classList.add('show');
+            }
+            
+            renderHistory() {
+                if (this.state.history.length === 0) {
+                    this.elements.historyList.innerHTML = '<p style="text-align: center; color: #999;">尚無歷史記錄</p>';
+                    return;
+                }
+                
+                let html = '';
+                this.state.history.forEach(record => {
+                    const hours = Math.floor(record.duration / 3600);
+                    const minutes = Math.floor((record.duration % 3600) / 60);
+                    const timeStr = hours > 0 ? `${hours}小時${minutes}分` : `${minutes}分鐘`;
+                    
+                    html += `
+                        <div class="history-item">
+                            <div class="history-date">${record.date} ${record.time}</div>
+                            <div class="history-time">時長: ${timeStr}</div>
+                            <div class="history-money">賺取: ${record.money.toFixed(2)}</div>
+                        </div>
+                    `;
+                });
+                
+                this.elements.historyList.innerHTML = html;
+            }
+            
+            clearHistory() {
+                if (confirm('確定要清除所有歷史記錄嗎？')) {
+                    this.state.history = [];
+                    this.saveState();
+                    this.renderHistory();
+                    this.showToast('歷史記錄已清除');
+                }
+            }
+            
+            openSettings() {
+                this.elements.hourlyRateInput.value = this.state.hourlyRate;
+                this.elements.targetAmountInput.value = this.state.targetAmount || '';
+                this.elements.settingsModal.classList.add('show');
+            }
+            
+            saveSettings() {
+                const hourlyRate = parseFloat(this.elements.hourlyRateInput.value) || 300;
+                const targetAmount = parseFloat(this.elements.targetAmountInput.value) || null;
+                
+                this.state.hourlyRate = hourlyRate;
+                this.state.targetAmount = targetAmount;
+                this.state.targetReached = false;
+                
+                this.updateDisplay();
+                this.saveState();
+                this.closeModal('settingsModal');
+                this.showToast('設定已儲存');
+            }
+            
+            saveState() {
+                const dataToSave = {
+                    ...this.state,
+                    savedAt: Date.now()
+                };
+                localStorage.setItem('salaryThiefState', JSON.stringify(dataToSave));
+            }
+            
+            loadState() {
+                const saved = localStorage.getItem('salaryThiefState');
+                if (saved) {
+                    try {
+                        const data = JSON.parse(saved);
+                        
+                        this.state = {
+                            ...this.state,
+                            ...data,
+                            isRunning: data.isRunning && data.startTime ? true : false,
+                            isPaused: false
+                        };
+                        
+                        if (data.isRunning && data.startTime) {
+                            const now = Date.now();
+                            const offlineTime = Math.floor((now - data.savedAt) / 1000);
+                            
+                            if (offlineTime < 3600) {
+                                this.state.startTime = data.startTime;
+                            } else {
+                                this.state.isRunning = false;
+                                this.state.startTime = null;
+                                this.showToast('離線時間過長，計時已停止');
+                            }
+                        }
+                    } catch (e) {
+                        console.error('載入資料失敗:', e);
+                        this.showToast('載入資料失敗');
+                    }
+                }
+            }
+            
+            updateDisplay() {
+                this.updateTimer();
+                this.updateMoney();
+                this.updateStatsDisplay();
+                this.checkTargetProgress();
+            }
+            
+            closeModal(modalId) {
+                this.elements[modalId].classList.remove('show');
+            }
+            
+            showToast(message, duration = 3000) {
+                this.elements.toast.textContent = message;
+                this.elements.toast.classList.add('show');
+                
+                setTimeout(() => {
+                    this.elements.toast.classList.remove('show');
+                }, duration);
+            }
+        }
+        
+        // 初始化應用程式
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM載入完成，開始初始化...');
+            
+            try {
+                const app = new SalaryThief();
+                
+                // 頁面可見性變化處理
+                document.addEventListener('visibilitychange', function() {
+                    if (document.hidden) {
+                        if (app.state.isRunning) {
+                            app.saveState();
+                        }
+                    } else {
+                        if (app.state.isRunning && app.state.startTime) {
+                            app.updateTimer();
+                            app.updateMoney();
+                            app.checkTargetProgress();
+                        }
+                    }
+                });
+                
+                // 防止意外關閉
+                window.addEventListener('beforeunload', function(e) {
+                    if (app.state.isRunning) {
+                        app.saveState();
+                        e.preventDefault();
+                        e.returnValue = '計時器正在運行中，確定要離開嗎？';
+                    }
+                });
+                
+                // 全域存取（方便除錯）
+                window.salaryThiefApp = app;
+                console.log('應用程式初始化成功！');
+                
+            } catch (error) {
+                console.error('初始化失敗:', error);
+                alert('應用程式初始化失敗，請重新整理頁面');
+            }
+        });
+        
+        console.log('Script載入完成');
+    </script>
+</body>
+</html>
