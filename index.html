@@ -592,6 +592,11 @@
     </div>
     
     <script>
+        // 等待DOM完全載入
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('頁面載入完成，初始化應用程式...');
+        });
+        
         class SalaryThief {
             constructor() {
                 this.state = {
@@ -662,28 +667,66 @@
             }
             
             bindEvents() {
-                this.elements.startButton.addEventListener('click', () => this.toggleTimer());
-                this.elements.pauseButton.addEventListener('click', () => this.pauseTimer());
-                this.elements.resetButton.addEventListener('click', () => this.resetTimer());
-                this.elements.settingsButton.addEventListener('click', () => this.openSettings());
-                this.elements.historyButton.addEventListener('click', () => this.openHistory());
+                const self = this;
                 
-                document.getElementById('cancelSettingsBtn').addEventListener('click', () => this.closeModal('settingsModal'));
-                document.getElementById('saveSettingsBtn').addEventListener('click', () => this.saveSettings());
-                document.getElementById('closeHistoryBtn').addEventListener('click', () => this.closeModal('historyModal'));
-                document.getElementById('clearHistoryBtn').addEventListener('click', () => this.clearHistory());
+                // 主要按鈕 - 使用傳統function確保this正確
+                this.elements.startButton.onclick = function() {
+                    console.log('開始按鈕被點擊');
+                    self.toggleTimer();
+                };
                 
-                this.elements.settingsModal.addEventListener('click', (e) => {
-                    if (e.target === this.elements.settingsModal) {
-                        this.closeModal('settingsModal');
+                this.elements.pauseButton.onclick = function() {
+                    console.log('暫停按鈕被點擊');
+                    self.pauseTimer();
+                };
+                
+                this.elements.resetButton.onclick = function() {
+                    console.log('重置按鈕被點擊');
+                    self.resetTimer();
+                };
+                
+                this.elements.settingsButton.onclick = function() {
+                    console.log('設定按鈕被點擊');
+                    self.openSettings();
+                };
+                
+                this.elements.historyButton.onclick = function() {
+                    console.log('歷史按鈕被點擊');
+                    self.openHistory();
+                };
+                
+                // 設定模態按鈕
+                document.getElementById('cancelSettingsBtn').onclick = function() {
+                    self.closeModal('settingsModal');
+                };
+                
+                document.getElementById('saveSettingsBtn').onclick = function() {
+                    self.saveSettings();
+                };
+                
+                // 歷史模態按鈕
+                document.getElementById('closeHistoryBtn').onclick = function() {
+                    self.closeModal('historyModal');
+                };
+                
+                document.getElementById('clearHistoryBtn').onclick = function() {
+                    self.clearHistory();
+                };
+                
+                // 點擊背景關閉模態
+                this.elements.settingsModal.onclick = function(e) {
+                    if (e.target === self.elements.settingsModal) {
+                        self.closeModal('settingsModal');
                     }
-                });
+                };
                 
-                this.elements.historyModal.addEventListener('click', (e) => {
-                    if (e.target === this.elements.historyModal) {
-                        this.closeModal('historyModal');
+                this.elements.historyModal.onclick = function(e) {
+                    if (e.target === self.elements.historyModal) {
+                        self.closeModal('historyModal');
                     }
-                });
+                };
+                
+                console.log('事件綁定完成');
             }
             
             toggleTimer() {
@@ -894,4 +937,3 @@
                 if (lastDate.toDateString() !== currentDate.toDateString()) {
                     if (this.state.todayTotal > 0) {
                         this.showToast(`昨日偷薪總計: $${this.state.todayTotal.toFixed(2)}`);
-                        
